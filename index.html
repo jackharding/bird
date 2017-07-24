@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>Bird</title>
+	</head>
+	<body>
+		<div id="app">
+			<div class="question">
+				<img v-bind:src="next.image" alt="What bird is this?" class="question__img">
+			</div>
+			<ul class="answers">
+				<li v-for="answer in next.answers">
+					<button v-on:click="submitAnswer" class="btn btn--answer">{{ answer | tidyName }}</button>
+				</li>
+			</ul>
+		</div>
+
+		<script src="https://unpkg.com/vue"></script>
+		<script src="app/app.js"></script>
+	</body>
+</html>
