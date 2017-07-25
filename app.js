@@ -51,7 +51,8 @@ var app = new Vue({
 			image: '',
 			answers: [],
 		},
-		score: 0
+		score: 0,
+		count: 1
 	},
 	methods: {
 		getRandomInt: function(array) {
@@ -102,10 +103,21 @@ var app = new Vue({
 			var choice = e.target.innerText;
 			if(choice == this.next.question.replace(/\d./g, '').replace(/_/g, ' ')) {
 				this.score++;
-				alert('ya buddy');
+				console.log('correct', this.score);
 			} else {
-				alert('no chance');
+				console.log('WRONG', this.score);
 			}
+
+			if(this.used.length == 14) {
+				this.endQuiz();
+			} else {
+				this.getNext();
+				this.count++;
+			}
+		},
+		endQuiz: function() {
+			this.next = {};
+			alert('You got ' + this.score);
 		}
 	},
 	filters: {
@@ -114,6 +126,27 @@ var app = new Vue({
 			value = value.replace(/\d./g, '').replace(/_/g, ' ');
 			return value;
 		}
+	},
+	mounted: function() {
+		var selectedAnswer;
+		window.addEventListener('keyup', function(e) {
+			switch(e.keyCode) {
+				case 49:
+					document.querySelector('button[data-answer="0"]').click();
+					break;
+				case 50:
+					document.querySelector('button[data-answer="0"]').click();
+					break;
+				case 51:
+					document.querySelector('button[data-answer="0"]').click();
+					break;
+				case 52:
+					document.querySelector('button[data-answer="0"]').click();
+					break;
+				default:
+					break;
+			}
+		});
 	}
 });
 
