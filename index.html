@@ -7,9 +7,9 @@
 	<body>
 		<div id="app" v-on:keyup.49="greet">
 			<div class="score">Score: {{ score }}</div>
-			<div class="remaining">Question {{ count }} of 15</div>
+			<div class="remaining">Question {{ count }} of {{ limit }}</div>
 			<div class="question">
-				<img v-if="next.image" v-bind:src="next.image" alt="What bird is this?" class="question__img">
+				<canvas v-if="playing" id="questionCanvas" width="300" height="300"></canvas>
 			</div>
 			<ul class="answers">
 				<li v-for="(answer, i) in next.answers">
