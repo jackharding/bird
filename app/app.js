@@ -37,6 +37,21 @@ function shuffleArray(array) {
     return array;
 }
 
+function debounce(func, wait, immediate) {
+	var timeout;
+	return function() {
+		var context = this, args = arguments;
+		var later = function() {
+			timeout = null;
+			if (!immediate) func.apply(context, args);
+		};
+		var callNow = immediate && !timeout;
+		clearTimeout(timeout);
+		timeout = setTimeout(later, wait);
+		if (callNow) func.apply(context, args);
+	};
+}
+
 readNames('./lists/classes.txt');
 readImages('./lists/files.txt');
 
@@ -66,7 +81,6 @@ var app = new Vue({
 				var question = this.names[this.getRandomInt(this.names)].trim();
 				// if this question has been used before, look again
 				if(unique) {
-					console.log('test');
 					if(!this.used.includes(question)) {
 						return question;
 						break;
@@ -103,6 +117,9 @@ var app = new Vue({
 
 			var canvas = document.getElementById('questionCanvas');
 			ctx = canvas.getContext('2d');
+			var containerWidth = document.querySelector('.question').offsetWidth;
+			canvas.width = containerWidth;
+			canvas.height = containerWidth;
 			var canvasImg = new Image();
 			canvasImg.src = 'img/birds/' + this.next.image;
 			canvasImg.onload = function() {
@@ -121,7 +138,6 @@ var app = new Vue({
 		},
 		submitAnswer: function(e) {
 			var choice = e.target.innerText;
-			console.log(choice, this.next.question.replace(/\d./g, '').replace(/_/g, ' '));
 			if(choice == this.next.question.replace(/\d./g, '').replace(/_/g, ' ')) {
 				this.score++;
 				console.log('correct', this.score);
@@ -168,6 +184,10 @@ var app = new Vue({
 				default:
 					break;
 			}
+		});
+
+		window.addEventListener('resize', function() {
+			this.placeImage();
 		});
 	}
 });
