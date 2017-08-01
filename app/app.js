@@ -58,7 +58,7 @@ readImages('./lists/files.txt');
 var app = new Vue({
 	el: '#app',
 	data: {
-		playing: true,
+		playing: false,
 		names: names,
 		images: images,
 		used: [],
@@ -76,6 +76,15 @@ var app = new Vue({
 			var max = array.length - 1;
 			return Math.round(Math.random() * (max - 0));
 		},
+		// start functions
+		startGame: function() {
+			this.playing = true;
+			// TODO find better way to stop canvas being null
+			setTimeout(function() {
+				app.getNext();
+			}, 1000);
+		},
+		// in-game functions
 		getQuestion: function(unique) {
 			while(true) {
 				var question = this.names[this.getRandomInt(this.names)].trim();
@@ -84,7 +93,7 @@ var app = new Vue({
 					if(!this.used.includes(question)) {
 						return question;
 						break;
-					}					
+					}
 				} else {
 					return question;
 					break;
@@ -191,6 +200,4 @@ var app = new Vue({
 		});
 	}
 });
-
-app.getNext();
 // .replace(/\d./g, '').replace(/_/g, ' ').split('\n')
