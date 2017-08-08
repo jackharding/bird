@@ -1,39 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-
-		<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
-		<link rel="stylesheet" href="app/normalize.css" />
-		<link rel="stylesheet" href="app/style.css" />
-
-		<title>Bird</title>
-	</head>
-	<body>
-		<div id="app" class="container">
-			<div class="quiz" v-if="playing">
-				<div class="quiz__top">
-					<div class="remaining">Question {{ count }} of {{ limit }}</div>
-					<div class="score">Score: {{ score }}</div>
-				</div>
-
-				<div class="question">
-					<canvas v-if="playing" id="questionCanvas" width="300" height="300"></canvas>
-				</div>
-				<ul class="answers">
-					<li v-for="(answer, i) in next.answers">
-						<button v-on:click="submitAnswer" class="btn btn--answer" :data-answer="i">{{ answer | tidyName }}</button>
-					</li>
-				</ul>
-			</div>
-
-			<div class="start" v-else>
-				<button v-on:click="startGame()">Play</button>
-			</div>
-		</div>
-
-		<script src="https://unpkg.com/vue"></script>
-		<script src="app/app.js"></script>
-	</body>
+  <head>
+    <meta charset="utf-8">
+    <title>bird</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script src="/dist/build.js"></script>
+  </body>
 </html>

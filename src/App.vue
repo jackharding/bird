@@ -1,10 +1,12 @@
 <template>
-    <div id="app">
+    <div id="app" class="container">
         <home-screen v-if="!playing" :start-game="startGame"></home-screen>
 
-        <progress-bar v-if="playing" :count="count" :limit="limit" :score="score"></progress-bar>
-        <question></question>
-        <answers v-if="playing" :next="next" :submitAnswer="submitAnswer"></answers>
+        <div class="quiz">
+            <progress-bar v-if="playing" :count="count" :limit="limit" :score="score"></progress-bar>
+            <question v-show="playing"></question>
+            <answers v-if="playing" :next="next" :submitAnswer="submitAnswer"></answers>
+        </div>
     </div>
 </template>
 
@@ -129,17 +131,20 @@ export default {
             this.next.question = img;
             this.next.image = this.findMatch(this.next.question, this.images).trim();
 
-            var canvas = document.getElementById('questionCanvas');
-            var ctx = canvas.getContext('2d');
-            var containerWidth = document.querySelector('.question').offsetWidth;
-            canvas.width = containerWidth;
-            canvas.height = containerWidth;
-            var canvasImg = new Image();
-            canvasImg.src = './../static/img/birds/' + this.next.image;
-            console.log(canvasImg.src);
-            canvasImg.onload = function() {
-                ctx.drawImage(canvasImg, 0, 0, canvasImg.width, canvasImg.height, 0, 0, canvas.width, canvas.height);
-            }
+            setTimeout(() => {
+                var canvas = document.getElementById('questionCanvas');
+                var ctx = canvas.getContext('2d');
+                var containerWidth = document.querySelector('.question').offsetWidth;
+                canvas.width = containerWidth;
+                canvas.height = containerWidth;
+                console.log(canvas.width);
+                var canvasImg = new Image();
+                canvasImg.src = './../static/img/birds/' + this.next.image;
+                console.log(canvasImg.src);
+                canvasImg.onload = function() {
+                    ctx.drawImage(canvasImg, 0, 0, canvasImg.width, canvasImg.height, 0, 0, canvas.width, canvas.height);
+                }
+            },100);
         },
         getNext: function() {
             if(this.next.question.length) {
@@ -178,35 +183,96 @@ export default {
     mounted: function() {
         this.readNames('./../static/txt/classes.txt');
         this.readImages('./../static/txt/files.txt');
+
+        window.addEventListener('keyup', function(e) {
+            switch(e.keyCode) {
+                case 49:
+                    document.querySelector('button[data-answer="0"]').click();
+                    break;
+                case 50:
+                    document.querySelector('button[data-answer="1"]').click();
+                    break;
+                case 51:
+                    document.querySelector('button[data-answer="2"]').click();
+                    break;
+                case 52:
+                    document.querySelector('button[data-answer="3"]').click();
+                    break;
+                default:
+                    break;
+            }
+        });
     }
 }
 </script>
 
 <style lang="scss">
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+/* Variables */
+$black: #333;
+
+/* Mixins */
+@mixin list-plain {
+    padding: 0;
+    margin: 0;
+    list-style: none;
 }
 
-h1, h2 {
-  font-weight: normal;
+*, *:before, *:after {
+    box-sizing: border-box;
 }
 
-ul {
-  list-style-type: none;
-  padding: 0;
+html,
+body {
+    overflow-x: hidden;
 }
 
-li {
-  display: inline-block;
-  margin: 0 10px;
+body {
+    font-family: 'Open Sans', sans-serif;
+    color: $black;
 }
 
-a {
-  color: #42b983;
+.btn {
+    background: none;
+    padding: 5px;
+    border: 1px solid $black;
+    font-size: 14px;
+    &.btn--answer {
+        width: 100%;
+        height: 55px;
+    }
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    max-width: 450px;
+    margin: 0 auto;
+    padding: 15px 15px;
+    >div {
+        width: 100%;
+    }
+}
+
+.quiz__top {
+    font-size: 20px;
+    text-align: center;
+}
+
+.question {
+    width: 100%;
+    margin: 15px 0;
+}
+
+.answers {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    @include list-plain;
+    li {
+        width: calc(50% - 7.5px);
+        &:nth-of-type(n+3) {
+            margin-top: 15px;
+        }
+    }
 }
 </style>
