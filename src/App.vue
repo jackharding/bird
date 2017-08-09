@@ -2,10 +2,10 @@
     <div id="app" class="container">
         <home-screen v-if="!playing" :start-game="startGame"></home-screen>
 
-        <div class="quiz">
-            <progress-bar v-if="playing" :count="count" :limit="limit" :score="score"></progress-bar>
-            <question v-show="playing"></question>
-            <answers v-if="playing" :next="next" :submitAnswer="submitAnswer"></answers>
+        <div class="quiz" v-if="playing">
+            <progress-bar :count="count" :limit="limit" :score="score"></progress-bar>
+            <question></question>
+            <answers :next="next" :submitAnswer="submitAnswer"></answers>
         </div>
     </div>
 </template>
@@ -207,6 +207,9 @@ export default {
 </script>
 
 <style lang="scss">
+@import './../node_modules/normalize.css/normalize.css';
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+
 /* Variables */
 $black: #333;
 
