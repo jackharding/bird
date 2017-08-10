@@ -1,12 +1,20 @@
 <template>
-    <div id="app" class="container">
-        <home-screen v-if="!playing" :start-game="startGame"></home-screen>
+    <div id="app">
+        <div class="container">
+            <home-screen v-if="!playing" :start-game="startGame" @toggleAbout="about = !about"></home-screen>
 
-        <div class="quiz" v-if="playing">
-            <progress-bar :count="count" :limit="limit" :score="score"></progress-bar>
-            <question></question>
-            <answers :next="next" :submitAnswer="submitAnswer"></answers>
+            <transition name="fade">
+                <div class="quiz" v-if="playing">
+                    <progress-bar :count="count" :limit="limit" :score="score"></progress-bar>
+                    <question></question>
+                    <answers :next="next" :submitAnswer="submitAnswer"></answers>
+                </div>
+            </transition>
         </div>
+
+        <transition name="swipe">
+            <about v-if="about" @toggleAbout="about = !about"></about>
+        </transition>
     </div>
 </template>
 
@@ -16,6 +24,7 @@ import HomeScreen from './components/HomeScreen.vue';
 import ProgressBar from './components/quiz/ProgressBar.vue';
 import Question from './components/quiz/Question.vue';
 import Answers from './components/quiz/Answers.vue';
+import About from './components/About.vue';
 
 export default {
     name: 'app',
@@ -24,6 +33,7 @@ export default {
         ProgressBar,
         Question,
         Answers,
+        About
     },
     data () {
         return {
@@ -38,7 +48,8 @@ export default {
             },
             score: 0,
             count: 1,
-            limit: 10
+            limit: 10,
+            about: false
         }
     },
     methods: {
@@ -226,7 +237,7 @@ $black: #333;
 
 html,
 body {
-    overflow-x: hidden;
+    overflow: hidden;
 }
 
 body {
@@ -245,8 +256,20 @@ body {
     }
 }
 
+a:not([class]) {
+    text-decoration: none;
+}
+
+p {
+    margin: 0;
+    +p {
+        margin-top: 15px;
+    }
+}
+
 .container {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     max-width: 450px;
     margin: 0 auto;
@@ -277,5 +300,20 @@ body {
             margin-top: 15px;
         }
     }
+}
+
+// ANIMATIOn
+.fade-enter-active, .fade-leave-active {
+    transition: opacity .8s
+}
+.fade-enter, .fade-leave-to {
+    opacity: 0;
+}
+
+.swipe-enter-active, .swipe-leave-active {
+    transition: transform 1s
+}
+.swipe-enter, .swipe-leave-to {
+    transform: translateY(100%);
 }
 </style>

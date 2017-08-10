@@ -86,7 +86,7 @@
 			<ul class="home__menu">
 				<li><button @click="startGame()" class="home__btn">Play</button></li>
 				<li><button @click="viewHighScores()" class="home__btn">Top 10</button></li>
-				<li><button @click="showAbout()" class="home__btn">Why?</button></li>
+				<li><button @click="$emit('toggleAbout')" class="home__btn">About</button></li>
 			</ul>
 		</nav>
 	</div>
@@ -95,14 +95,21 @@
 <script>
 	export default {
 		props: [
-			'startGame'
+			'startGame',
+			'about'
 		],
+		data() {
+			return {
+
+			}
+		},
 		methods: {
 			viewHighScores: () => {
 				console.log('show high scores');
 			},
-			showAbout: () => {
-				console.log('show about');
+			showAbout: function() {
+				this.about = true;
+				console.log();
 			}
 		}
 	}
