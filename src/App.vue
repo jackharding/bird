@@ -1,21 +1,19 @@
 <template>
     <div id="app">
         <div class="container">
-            <home-screen v-if="!playing" :start-game="startGame" @toggleAbout="about = !about"></home-screen>
+            <home-screen v-if="stage == 'home'" :start-game="startGame" @toggleAbout="about = !about"></home-screen>
 
             <transition name="fade">
-                <div class="quiz" v-if="playing">
-                    <progress-bar :count="count" :limit="limit" :score="score"></progress-bar>
+                <div class="quiz" v-if="stage == 'playing'">
+                    <progress-bar :count="count" :limit="limit" :score="score" :totalQuestions="totalQuestions"></progress-bar>
                     <question></question>
                     <answers :next="next" :submitAnswer="submitAnswer"></answers>
                 </div>
             </transition>
 
-            <button @click="writeScore(1, 'Dai' , 109)">addShit</button>
-
-            <button @click="setScore()">get shit</button>
-
-            <input type="text" v-model="username">
+            <transition name="fade">
+                <game-over v-if="stage == 'game-over'" :score="score"></game-over>
+            </transition>
         </div>
 
         <transition name="swipe">
@@ -35,6 +33,7 @@ import ProgressBar from './components/quiz/ProgressBar.vue';
 import Question from './components/quiz/Question.vue';
 import Answers from './components/quiz/Answers.vue';
 import About from './components/About.vue';
+import GameOver from './components/GameOver.vue';
 
 var config = {
     apiKey: "AIzaSyA-uXlVogybUg4bKfQAVioI3Hu2tGnwNP4",
@@ -55,11 +54,12 @@ export default {
         ProgressBar,
         Question,
         Answers,
-        About
+        About,
+        GameOver
     },
     data () {
         return {
-            playing: false,
+            stage: 'home',
             names: [],
             images: [],
             used: [],
@@ -70,9 +70,15 @@ export default {
             },
             score: 0,
             count: 1,
-            username: 'flippy nips',
-            limit: 50,
-            about: false
+            username: '',
+            limit: 10,
+            about: false,
+            totalQuestions: 0
+        }
+    },
+    watch: {
+        names: function() {
+            this.totalQuestions = this.names.length
         }
     },
     methods: {
@@ -104,7 +110,9 @@ export default {
             return Math.round(Math.random() * (max - 0));
         },
         startGame: function() {
-            this.playing = true;
+            this.score = 0;
+            this.count = 1;
+            this.stage = 'playing';
             this.getNext();
         },
         readNames: function(file) {
@@ -208,19 +216,9 @@ export default {
         },
         endQuiz: function() {
             this.next = {};
-            this.playing = false;
-            this.score = 0;
-            this.count = 1;
-            alert('You got ' + this.score);
+            this.stage = 'game-over';            
         },
         // Database
-        writeScore: function(id, name, score) {
-            firebase.database().ref('scores/' + id).set({
-                id: id,
-                name: name,
-                score: score
-            });
-        },
         getScores: function(limit = 10, order = 'score') {
             // get the top 10 ordered by score
             return firebase.database()
@@ -233,36 +231,34 @@ export default {
                 return err;
             });
         },
-        setScore: function() {
+        checkScore: function() {
             // check if the user's score is higher than any of the top 10
             this.getScores()
             .then(data => {
                 var betterThan;
                 var currentIndex = 0;
                 data.forEach(topScore => {
-                    console.log(topScore);
                     if(this.score > topScore.val().score) {
-                        betterThan = currentIndex;
+                        betterThan = topScore.key;
                     }
                     currentIndex++;
                 });
 
                 // if there aren't 10 scores yet, just add it
-                if(currentIndex < 10) {
+                if(currentIndex < 10 || betterThan) {
+                    this.notifyUser();
                     var newScore = firebase.database().ref('scores/').push();
                     newScore.set({
                         name: this.username,
                         score: this.score
                     });
-                } else {
-                    // TODO: find the key of the beaten score and update it
-                    if(betterThan) {
-                        firebase.database().ref('scores/' + betterThan)
-                        .update({score: this.score});
-                    }                    
                 }
                 
             });
+        },
+        // ask user for username to save high score
+        notifyUser: function() {
+            
         }
     },
     mounted: function() {
