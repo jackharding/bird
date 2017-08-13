@@ -19,12 +19,25 @@
 </template>
 
 <script>
+import * as firebase from 'firebase'
+import 'firebase/database'
 import axios from 'axios';
+
 import HomeScreen from './components/HomeScreen.vue';
 import ProgressBar from './components/quiz/ProgressBar.vue';
 import Question from './components/quiz/Question.vue';
 import Answers from './components/quiz/Answers.vue';
 import About from './components/About.vue';
+
+var config = {
+    apiKey: "AIzaSyA-uXlVogybUg4bKfQAVioI3Hu2tGnwNP4",
+    authDomain: "bird-7f316.firebaseapp.com",
+    databaseURL: "https://bird-7f316.firebaseio.com",
+    projectId: "bird-7f316",
+    storageBucket: "bird-7f316.appspot.com",
+    messagingSenderId: "978473236345"
+};
+firebase.initializeApp(config);
 
 export default {
     name: 'app',
@@ -80,7 +93,7 @@ export default {
             var max = array.length - 1;
             return Math.round(Math.random() * (max - 0));
         },
-        startGame: function() {            
+        startGame: function() {
             this.playing = true;
             this.getNext();
         },
