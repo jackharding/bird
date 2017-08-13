@@ -10,6 +10,12 @@
                     <answers :next="next" :submitAnswer="submitAnswer"></answers>
                 </div>
             </transition>
+
+            <button @click="writeScore(1, 'Dai' , 109)">addShit</button>
+
+            <button @click="setScore()">get shit</button>
+
+            <input type="text" v-model="username">
         </div>
 
         <transition name="swipe">
@@ -20,6 +26,7 @@
 
 <script>
 import * as firebase from 'firebase'
+import 'firebase/auth'
 import 'firebase/database'
 import axios from 'axios';
 
@@ -38,6 +45,8 @@ var config = {
     messagingSenderId: "978473236345"
 };
 firebase.initializeApp(config);
+
+var db = firebase.database();
 
 export default {
     name: 'app',
@@ -61,7 +70,8 @@ export default {
             },
             score: 0,
             count: 1,
-            limit: 10,
+            username: 'flippy nips',
+            limit: 50,
             about: false
         }
     },
@@ -202,6 +212,57 @@ export default {
             this.score = 0;
             this.count = 1;
             alert('You got ' + this.score);
+        },
+        // Database
+        writeScore: function(id, name, score) {
+            firebase.database().ref('scores/' + id).set({
+                id: id,
+                name: name,
+                score: score
+            });
+        },
+        getScores: function(limit = 10, order = 'score') {
+            // get the top 10 ordered by score
+            return firebase.database()
+            .ref('scores/')
+            .orderByChild(order)
+            .limitToFirst(limit)
+            .once('value', function(snap) {
+                return snap;
+            }, function(err) {
+                return err;
+            });
+        },
+        setScore: function() {
+            // check if the user's score is higher than any of the top 10
+            this.getScores()
+            .then(data => {
+                var betterThan;
+                var currentIndex = 0;
+                data.forEach(topScore => {
+                    console.log(topScore);
+                    if(this.score > topScore.val().score) {
+                        betterThan = currentIndex;
+                    }
+                    currentIndex++;
+                });
+
+                // if there aren't 10 scores yet, just add it
+                if(currentIndex < 10) {
+                    var newScore = firebase.database().ref('scores/').push();
+                    newScore.set({
+                        name: this.username,
+                        score: this.score
+                    });
+                } else {
+                    // TODO: find the key of the beaten score and update it
+                    if(betterThan) {
+                        firebase.database().ref('scores/' + betterThan)
+                        .update({score: this.score});
+                    }                    
+                }
+                
+            });
         }
     },
     mounted: function() {
