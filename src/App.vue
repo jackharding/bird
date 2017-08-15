@@ -12,7 +12,7 @@
             </transition>
 
             <transition name="fade">
-                <game-over v-if="stage == 'game-over'" :score="score"></game-over>
+                <game-over v-if="stage == 'game-over'" :score="score" @toggleAbout="about = !about"></game-over>
             </transition>
         </div>
 
@@ -217,70 +217,31 @@ export default {
         endQuiz: function() {
             this.next = {};
             this.stage = 'game-over';            
-        },
-        // Database
-        getScores: function(limit = 10, order = 'score') {
-            // get the top 10 ordered by score
-            return firebase.database()
-            .ref('scores/')
-            .orderByChild(order)
-            .limitToFirst(limit)
-            .once('value', function(snap) {
-                return snap;
-            }, function(err) {
-                return err;
-            });
-        },
-        checkScore: function() {
-            // check if the user's score is higher than any of the top 10
-            this.getScores()
-            .then(data => {
-                var betterThan;
-                var currentIndex = 0;
-                data.forEach(topScore => {
-                    if(this.score > topScore.val().score) {
-                        betterThan = topScore.key;
-                    }
-                    currentIndex++;
-                });
-
-                // if there aren't 10 scores yet, just add it
-                if(currentIndex < 10 || betterThan) {
-                    this.notifyUser();
-                    var newScore = firebase.database().ref('scores/').push();
-                    newScore.set({
-                        name: this.username,
-                        score: this.score
-                    });
-                }
-                
-            });
-        },
-        // ask user for username to save high score
-        notifyUser: function() {
-            
         }
     },
     mounted: function() {
         this.readNames('./../static/txt/classes.txt');
         this.readImages('./../static/txt/files.txt');
+        var app = this;
 
         window.addEventListener('keyup', function(e) {
-            switch(e.keyCode) {
-                case 49:
-                    document.querySelector('button[data-answer="0"]').click();
-                    break;
-                case 50:
-                    document.querySelector('button[data-answer="1"]').click();
-                    break;
-                case 51:
-                    document.querySelector('button[data-answer="2"]').click();
-                    break;
-                case 52:
-                    document.querySelector('button[data-answer="3"]').click();
-                    break;
-                default:
-                    break;
+            if(app.stage == 'playing') {                
+                switch(e.keyCode) {
+                    case 49:
+                        document.querySelector('button[data-answer="0"]').click();
+                        break;
+                    case 50:
+                        document.querySelector('button[data-answer="1"]').click();
+                        break;
+                    case 51:
+                        document.querySelector('button[data-answer="2"]').click();
+                        break;
+                    case 52:
+                        document.querySelector('button[data-answer="3"]').click();
+                        break;
+                    default:
+                        break;
+                }
             }
         });
     }
@@ -346,6 +307,23 @@ p {
     padding: 15px 15px;
     >div {
         width: 100%;
+    }
+}
+
+.menu {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 310px;
+    padding: 0;
+    margin: 0;
+    margin: 25px auto 0;
+    list-style: none;
+    li {
+        display: inline-block;
+        &:nth-of-type(2) {
+            margin: 0 50px;
+        }
     }
 }
 

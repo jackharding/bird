@@ -83,7 +83,7 @@
 		</div>
 		
 		<nav role="navigation">
-			<ul class="home__menu">
+			<ul class="home__menu menu">
 				<li><button @click="startGame()" class="home__btn">Play</button></li>
 				<li><button @click="viewHighScores()" class="home__btn">Top 10</button></li>
 				<li><button @click="$emit('toggleAbout')" class="home__btn">About</button></li>
@@ -120,23 +120,7 @@
 
 	.logo {
 		padding-top: 35px;
-	}
-
-	.home__menu {
-		display: flex;
-		justify-content: space-between;
-		width: 100%;
-		max-width: 310px;
-		padding: 0;
-		margin: 25px auto 0;
-		list-style: none;
-		li {
-			display: inline-block;
-			&:nth-of-type(2) {
-				margin: 0 50px;
-			}
-		}
-	}
+	}	
 
 	.home__btn {
 		padding: 0;
