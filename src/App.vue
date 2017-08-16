@@ -1,7 +1,7 @@
 <template>
     <div id="app">
         <div class="container">
-            <home-screen v-if="stage == 'home'" :start-game="startGame" @toggleAbout="about = !about"></home-screen>
+            <home-screen v-if="stage == 'home'" :start-game="startGame" @toggleAbout="about = !about" :viewHighScores="viewHighScores"></home-screen>
 
             <transition name="fade">
                 <div class="quiz" v-if="stage == 'playing'">
@@ -12,12 +12,16 @@
             </transition>
 
             <transition name="fade">
-                <game-over v-if="stage == 'game-over'" :score="score" @toggleAbout="about = !about"></game-over>
+                <game-over v-if="stage == 'game-over'" :score="score" @toggleAbout="about = !about" :startGame="startGame" :viewHighScores="viewHighScores" :getScores="getScores"></game-over>
             </transition>
         </div>
 
         <transition name="swipe">
             <about v-if="about" @toggleAbout="about = !about"></about>
+        </transition>
+
+        <transition name="swipe">
+            <high-scores v-if="viewScores" @toggleScores="viewScores = !viewScores" :getScores="getScores"></high-scores>
         </transition>
     </div>
 </template>
@@ -34,6 +38,7 @@ import Question from './components/quiz/Question.vue';
 import Answers from './components/quiz/Answers.vue';
 import About from './components/About.vue';
 import GameOver from './components/GameOver.vue';
+import HighScores from './components/HighScores.vue';
 
 var config = {
     apiKey: "AIzaSyA-uXlVogybUg4bKfQAVioI3Hu2tGnwNP4",
@@ -55,7 +60,8 @@ export default {
         Question,
         Answers,
         About,
-        GameOver
+        HighScores,
+        GameOver,
     },
     data () {
         return {
@@ -73,6 +79,7 @@ export default {
             username: '',
             limit: 10,
             about: false,
+            viewScores: false,
             totalQuestions: 0
         }
     },
@@ -112,6 +119,7 @@ export default {
         startGame: function() {
             this.score = 0;
             this.count = 1;
+            this.used = [];
             this.stage = 'playing';
             this.getNext();
         },
@@ -179,7 +187,7 @@ export default {
                 var containerWidth = document.querySelector('.question').offsetWidth;
                 canvas.width = containerWidth;
                 canvas.height = containerWidth;
-                console.log(canvas.width);
+                console.log(canvasImg);
                 var canvasImg = new Image();
                 canvasImg.src = './../static/img/birds/' + this.next.image;
                 console.log(canvasImg.src);
@@ -189,7 +197,7 @@ export default {
             },100);
         },
         getNext: function() {
-            if(this.next.question.length) {
+            if(this.next.question) {
                 this.used.push(this.next.question);
             }
 
@@ -217,7 +225,22 @@ export default {
         endQuiz: function() {
             this.next = {};
             this.stage = 'game-over';            
-        }
+        },
+        viewHighScores: function() {
+            this.viewScores = true;
+        },
+        getScores: function(limit = 10, order = 'score') {
+            // get the top 10 ordered by score
+            return firebase.database()
+            .ref('scores/')
+            .orderByChild(order)
+            .limitToFirst(limit)
+            .once('value', function(snap) {
+                return snap;
+            }, function(err) {
+                return err;
+            });
+        },
     },
     mounted: function() {
         this.readNames('./../static/txt/classes.txt');

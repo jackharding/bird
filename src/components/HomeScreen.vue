@@ -96,7 +96,8 @@
 	export default {
 		props: [
 			'startGame',
-			'about'
+			'about',
+			'viewHighScores'
 		],
 		data() {
 			return {
@@ -104,9 +105,6 @@
 			}
 		},
 		methods: {
-			viewHighScores: () => {
-				console.log('show high scores');
-			},
 			showAbout: function() {
 				this.about = true;
 				console.log();

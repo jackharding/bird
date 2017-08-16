@@ -1,8 +1,11 @@
 <template>
 	<div class="game-over">
-		<div class="game-over__alert">
+		<div class="game-over__alert" v-if="highScore">
 			New high score! Submit your score.
-			<input class="game-over__input" type="text" v-model="username" />
+			<form action="" v-on:submit.prevent="setHighscore">
+				<input class="game-over__input" type="text" v-model="username" />
+				<button type="submit" class="btn">Submit</button>
+			</form>
 		</div>
 
 		<h3>You scored: <span>{{ score }}</span></h3>
@@ -24,11 +27,14 @@
 
 	export default {
 		props: [
-			'score'
+			'score',
+			'startGame',
+			'viewHighScores'
 		],
 		data() {
 			return {
-				username: 'bombaclart'
+				username: '',
+				highScore: false
 			}
 		},
 		mounted: function() {
@@ -63,19 +69,18 @@
 
 	                // if there aren't 10 scores yet, just add it
 	                if(currentIndex < 10 || betterThan) {
-	                    this.notifyUser();
-	                    var newScore = firebase.database().ref('scores/').push();
-	                    newScore.set({
-	                        name: this.username,
-	                        score: this.score
-	                    });
+	                    this.highScore = true;	                    
 	                }
 	                
 	            });
 	        },
 	        // ask user for username to save high score
-	        notifyUser: function() {
-	            alert('piss');
+	        setHighscore: function() {
+	        	var newScore = firebase.database().ref('scores/').push();
+                newScore.set({
+                    name: this.username,
+                    score: this.score
+                });
 	        }
 		}
 	}
