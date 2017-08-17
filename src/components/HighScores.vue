@@ -25,7 +25,16 @@
 
 		},
 		mounted: function() {
-			console.log(this.getScores());
+			this.getScores()
+			.then(data => {
+				const scores = data.val();
+				let scoresArr = Object.keys(scores).map(function(key) {
+					return [key, scores[key]];
+				})
+				const ordered = scoresArr.sort((a, b) => a.score > b.score ? 1 : -1);
+				console.log(scoresArr);
+				console.log(ordered);
+			});
 		}
 	}
 </script>
