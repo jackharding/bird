@@ -1,8 +1,25 @@
 <template>
 	<div class="hi-scores">
 		<div class="container">
-			<button class="about__close" @click="$emit('toggleAbout')">Back</button>
-			<div class="about__text" v-html="aboutText"></div>
+			<button class="about__close" @click="$emit('toggleScores')">Back</button>
+			<div class="about__text">
+				<table class="hi-scores__table">
+					<thead>
+						<tr>
+							<th>Rank</th>
+							<th>Name</th>
+							<th>Score</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="(score, index) in orderedScores">
+							<td>{{ index + 1 }}</td>
+							<td>{{ score[1].name }}</td>
+							<td>{{ score[1].score }}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 		</div>
 	</div>
 </template>
@@ -18,7 +35,7 @@
 		],
 		data() {
 			return {
-				aboutText: '<p>bird? is a bird identification built using <a href="https://vuejs.org" target="_blank" rel="nofollow noreferrer">VueJS</a>, <a href="https://firebase.google.com/" target="_blank" rel="nofollow noreferrer">Firebase</a> and the <a href="http://www.vision.caltech.edu/visipedia/CUB-200.html" target="_blank" rel="nofollow noreferrer">Caltech-UCSD Birds 200 dataset</a>.</p><p>Created by <a href="https://jackharding.co" target="_blank">Jack Harding</a></p>'
+				orderedScores: []
 			}
 		},
 		methods: {
@@ -31,9 +48,7 @@
 				let scoresArr = Object.keys(scores).map(function(key) {
 					return [key, scores[key]];
 				})
-				const ordered = scoresArr.sort((a, b) => a.score > b.score ? 1 : -1);
-				console.log(scoresArr);
-				console.log(ordered);
+				this.orderedScores = scoresArr.sort((a, b) => a[1].score > b[1].score ? 1 : -1).slice().reverse();
 			});
 		}
 	}
@@ -46,7 +61,7 @@
 		position: absolute;
 		top: 0;
 		left: 0;
-		width: 100vw;
+		width: 99vw;
 		height: 100vh;
 		padding: 35px 0;
 		background: rgba(255,255,255,1);
@@ -70,6 +85,15 @@
 			width: 100%;
 			height: 1px;
 			background: $black;
+		}
+	}
+
+	.hi-scores__table {
+		width: 100%;
+		text-align: left;
+		td,
+		th {
+			padding: 8px 5px;
 		}
 	}
 </style>

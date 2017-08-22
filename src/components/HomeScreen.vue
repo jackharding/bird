@@ -115,6 +115,7 @@
 
 <style lang="scss">
 	$black: #333;
+	$blue: #7F7FB2;
 
 	.logo {
 		padding-top: 35px;
@@ -127,6 +128,10 @@
 		font-size: 22px;
 		color: $black;
 		cursor: pointer;
+		transition: 0.3s;
+		&:hover {
+			color: $blue;
+		}
 	}
 
 	@media screen and (min-width: 500px) {

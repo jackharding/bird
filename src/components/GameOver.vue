@@ -97,6 +97,12 @@
 		text-align: center;
 	}
 
+	.game-over__alert {
+		form {
+			margin-top: 10px;
+		}
+	}
+
 	h3 {
 		font-size: 36px;
 		span {

@@ -27,7 +27,7 @@
 		position: absolute;
 		top: 0;
 		left: 0;
-		width: 100vw;
+		width: 99vw;
 		height: 100vh;
 		padding: 35px 0;
 		background: rgba(255,255,255,1);

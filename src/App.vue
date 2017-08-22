@@ -277,6 +277,7 @@ export default {
 
 /* Variables */
 $black: #333;
+$blue: #7F7FB2;
 
 /* Mixins */
 @mixin list-plain {
@@ -291,12 +292,16 @@ $black: #333;
 
 html,
 body {
-    overflow: hidden;
+    overflow-x: hidden;
 }
 
 body {
     font-family: 'Open Sans', sans-serif;
     color: $black;
+}
+
+a {
+    color: $blue;
 }
 
 .btn {
@@ -322,9 +327,7 @@ p {
 }
 
 .container {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
+
     max-width: 450px;
     margin: 0 auto;
     padding: 15px 15px;
@@ -370,6 +373,25 @@ p {
         &:nth-of-type(n+3) {
             margin-top: 15px;
         }
+    }
+}
+
+input[type="text"] {
+    height: 42px;
+    padding: 10px;
+}
+
+.btn {
+    height: 42px;
+    padding: 10px 20px;
+    background: $blue;
+    border: 1px solid $blue;
+    color: #fff;
+    cursor: pointer;
+    transition: .3s;
+    &:hover {
+        background: #fff;
+        color: $blue;
     }
 }
 
