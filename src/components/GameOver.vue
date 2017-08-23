@@ -2,8 +2,8 @@
 	<div class="game-over">
 		<div class="game-over__alert" v-if="highScore">
 			New high score! Submit your score.
-			<form action="" v-on:submit.prevent="setHighscore">
-				<input class="game-over__input" type="text" v-model="username" />
+			<form action="" v-on:submit.prevent="setHighscore" :disabled="valid == false">
+				<input class="game-over__input" type="text" @keyup="validateInput" v-model="username" />
 				<button type="submit" class="btn">Submit</button>
 			</form>
 		</div>
@@ -25,6 +25,15 @@
 	import 'firebase/auth'
 	import 'firebase/database';
 
+	const createDOMPurify = require('dompurify');
+	const { JSDOM } = require('jsdom');
+
+	const window = (new JSDOM('')).window;
+	const DOMPurify = createDOMPurify(window);	
+
+	const list = require('badwords-list'),
+      	  badArray = list.array;
+
 	export default {
 		props: [
 			'score',
@@ -34,7 +43,8 @@
 		data() {
 			return {
 				username: '',
-				highScore: false
+				highScore: false,
+				valid: false
 			}
 		},
 		mounted: function() {
@@ -76,11 +86,29 @@
 	        },
 	        // ask user for username to save high score
 	        setHighscore: function() {
-	        	var newScore = firebase.database().ref('scores/').push();
-                newScore.set({
-                    name: this.username,
-                    score: this.score
-                });
+	        	const clean = DOMPurify.sanitize(this.username);
+	        	console.log(clean);
+
+	        	// var newScore = firebase.database().ref('scores/').push();
+          //       newScore.set({
+          //           name: this.username,
+          //           score: this.score
+          //       });
+	        },
+	        validateInput() {
+	        	let profane = false;
+	        	for(var i = 0; i < badArray.length; i++) {
+					if(this.username.indexOf(badArray[i]) > -1) {
+						profane = true;
+					}
+					console.log(profane);
+				}
+
+	        	if(this.username.length > 0 && !profane) {
+	        		this.valid = true;
+	        	} else {
+	        		this.valid = false;
+	        	}
 	        }
 		}
 	}
