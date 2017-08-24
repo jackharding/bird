@@ -24,10 +24,10 @@
 	$black: #333;
 
 	.about {
-		position: absolute;
+		position: fixed;
 		top: 0;
 		left: 0;
-		width: 99vw;
+		width: 100vw;
 		height: 100vh;
 		padding: 35px 0;
 		background: rgba(255,255,255,1);

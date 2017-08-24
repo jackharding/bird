@@ -1,12 +1,14 @@
 <template>
 	<div class="game-over">
-		<div class="game-over__alert" v-if="highScore">
-			New high score! Submit your score.
-			<form action="" v-on:submit.prevent="setHighscore" :disabled="valid == false">
-				<input class="game-over__input" type="text" @keyup="validateInput" v-model="username" />
-				<button type="submit" class="btn">Submit</button>
-			</form>
-		</div>
+		<transition name="fade-out">
+			<div class="game-over__alert" v-if="highScore">
+				New high score! Submit your score.
+				<form action="" v-on:submit.prevent="setHighscore">
+					<input class="game-over__input" type="text" maxlength="20" @keyup="validateInput" v-model="username" />
+					<button type="submit" class="btn" :disabled="valid == false">Submit</button>
+				</form>
+			</div>
+		</transition>
 
 		<h3>You scored: <span>{{ score }}</span></h3>
 
@@ -25,20 +27,21 @@
 	import 'firebase/auth'
 	import 'firebase/database';
 
-	const createDOMPurify = require('dompurify');
-	const { JSDOM } = require('jsdom');
-
-	const window = (new JSDOM('')).window;
-	const DOMPurify = createDOMPurify(window);	
-
 	const list = require('badwords-list'),
       	  badArray = list.array;
+
+    function textFromHtmlString( arbitraryHtmlString ) {
+	    const temp = document.createElement('div');
+	    temp.innerHTML = arbitraryHtmlString;
+	    return temp.innerText;
+	}
 
 	export default {
 		props: [
 			'score',
 			'startGame',
-			'viewHighScores'
+			'viewHighScores',
+			'getScores'
 		],
 		data() {
 			return {
@@ -52,18 +55,6 @@
 		},
 		methods: {
 			// Database
-	        getScores: function(limit = 10, order = 'score') {
-	            // get the top 10 ordered by score
-	            return firebase.database()
-	            .ref('scores/')
-	            .orderByChild(order)
-	            .limitToFirst(limit)
-	            .once('value', function(snap) {
-	                return snap;
-	            }, function(err) {
-	                return err;
-	            });
-	        },
 	        checkScore: function() {
 	            // check if the user's score is higher than any of the top 10
 	            this.getScores()
@@ -71,6 +62,7 @@
 	                var betterThan;
 	                var currentIndex = 0;
 	                data.forEach(topScore => {
+	                	console.log(topScore.val());
 	                    if(this.score > topScore.val().score) {
 	                        betterThan = topScore.key;
 	                    }
@@ -81,19 +73,20 @@
 	                if(currentIndex < 10 || betterThan) {
 	                    this.highScore = true;	                    
 	                }
-	                
 	            });
 	        },
 	        // ask user for username to save high score
-	        setHighscore: function() {
-	        	const clean = DOMPurify.sanitize(this.username);
-	        	console.log(clean);
+	        setHighscore() {
+	        	const clean = textFromHtmlString(this.username);
 
-	        	// var newScore = firebase.database().ref('scores/').push();
-          //       newScore.set({
-          //           name: this.username,
-          //           score: this.score
-          //       });
+	        	const newScore = firebase.database().ref('scores/').push();
+                newScore.set({
+                    name: clean,
+                    score: this.score
+                })
+                .then(() => {
+                	this.highScore = false;
+                });
 	        },
 	        validateInput() {
 	        	let profane = false;
@@ -101,7 +94,6 @@
 					if(this.username.indexOf(badArray[i]) > -1) {
 						profane = true;
 					}
-					console.log(profane);
 				}
 
 	        	if(this.username.length > 0 && !profane) {
@@ -136,6 +128,17 @@
 		span {
 			display: block;
 			font-size: 66px;
+		}
+	}
+
+	.btn {
+		&[disabled] {
+			background: #bcbcbc;
+			border-color: #bcbcbc;
+			cursor: default;
+			&:hover {
+				color: #fff;
+			}
 		}
 	}
 </style>

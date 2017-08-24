@@ -48,7 +48,7 @@
 				let scoresArr = Object.keys(scores).map(function(key) {
 					return [key, scores[key]];
 				})
-				this.orderedScores = scoresArr.sort((a, b) => a[1].score > b[1].score ? 1 : -1).slice().reverse();
+				this.orderedScores = scoresArr.sort((a, b) => a[1].score > b[1].score ? 1 : -1).slice().reverse().slice(0, 10);
 			});
 		}
 	}
@@ -58,13 +58,14 @@
 	$black: #333;
 
 	.hi-scores {
-		position: absolute;
+		position: fixed;
 		top: 0;
 		left: 0;
-		width: 99vw;
+		width: 100vw;
 		height: 100vh;
 		padding: 35px 0;
 		background: rgba(255,255,255,1);
+		overflow-y: scroll;
 	}
 
 	.about__text {

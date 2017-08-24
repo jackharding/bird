@@ -107,7 +107,6 @@
 		methods: {
 			showAbout: function() {
 				this.about = true;
-				console.log();
 			}
 		}
 	}
@@ -130,7 +129,7 @@
 		cursor: pointer;
 		transition: 0.3s;
 		&:hover {
-			color: $blue;
+			color: lighten($black, 20%);
 		}
 	}
 

@@ -1,27 +1,56 @@
 <template>
     <div id="app">
         <div class="container">
-            <home-screen v-if="stage == 'home'" :start-game="startGame" @toggleAbout="about = !about" :viewHighScores="viewHighScores"></home-screen>
+            <transition name="fade">
+                <home-screen
+                    v-if="stage == 'home'"
+                    :start-game="startGame"
+                    @toggleAbout="about = !about"
+                    :viewHighScores="viewHighScores">
+                </home-screen>
+            </transition>
 
             <transition name="fade">
                 <div class="quiz" v-if="stage == 'playing'">
-                    <progress-bar :count="count" :limit="limit" :score="score" :totalQuestions="totalQuestions"></progress-bar>
+                    <progress-bar
+                        :count="count" 
+                        :limit="limit"
+                        :score="score"
+                        :totalQuestions="totalQuestions">
+                    </progress-bar>
                     <question></question>
-                    <answers :next="next" :submitAnswer="submitAnswer"></answers>
+                    <answers
+                        :next="next"
+                        :submitAnswer="submitAnswer">
+                    </answers>
                 </div>
             </transition>
 
             <transition name="fade">
-                <game-over v-if="stage == 'game-over'" :score="score" @toggleAbout="about = !about" :startGame="startGame" :viewHighScores="viewHighScores" :getScores="getScores"></game-over>
+                <game-over
+                    v-if="stage == 'game-over'"
+                    :score="score"
+                    @toggleAbout="about = !about"
+                    :startGame="startGame"
+                    :viewHighScores="viewHighScores"
+                    :getScores="getScores">
+                </game-over>
             </transition>
         </div>
 
         <transition name="swipe">
-            <about v-if="about" @toggleAbout="about = !about"></about>
+            <about
+                v-if="about"
+                @toggleAbout="about = !about">
+            </about>
         </transition>
 
         <transition name="swipe">
-            <high-scores v-if="viewScores" @toggleScores="viewScores = !viewScores" :getScores="getScores"></high-scores>
+            <high-scores
+                v-if="viewScores"
+                @toggleScores="viewScores = !viewScores"
+                :getScores="getScores">
+            </high-scores>
         </transition>
     </div>
 </template>
@@ -89,6 +118,7 @@ export default {
         }
     },
     methods: {
+        // TODO: answers aren't changin on replays
         debounce: function(func, wait, immediate) {
             var timeout;
             return function() {
@@ -120,8 +150,11 @@ export default {
             this.score = 0;
             this.count = 1;
             this.used = [];
-            this.stage = 'playing';
-            this.getNext();
+            this.stage = '';
+            setTimeout(() => {
+                this.stage = 'playing';
+                this.getNext();
+            },600);
         },
         readNames: function(file) {
             axios.get(file)
@@ -180,7 +213,6 @@ export default {
             var img = this.getQuestion(true);
             this.next.question = img;
             this.next.image = this.findMatch(this.next.question, this.images).trim();
-
             setTimeout(() => {
                 var canvas = document.getElementById('questionCanvas');
                 var ctx = canvas.getContext('2d');
@@ -210,37 +242,47 @@ export default {
             var choice = e.target.innerText;
             if(choice == this.next.question.replace(/\d./g, '').replace(/_/g, ' ')) {
                 this.score++;
-                console.log('correct', this.score);
+
+                if(this.used.length == this.limit - 1) {
+                    this.endQuiz();
+                } else {
+                    setTimeout(() => {
+                        this.getNext();
+                        this.count++;                    
+                    },200);
+                }
             } else {
-                console.log('WRONG', this.score);
+                this.endQuiz();
             }
 
-            if(this.used.length == this.limit - 1) {
-                this.endQuiz();
-            } else {
-                this.getNext();
-                this.count++;
-            }
         },
         endQuiz: function() {
             this.next = {};
-            this.stage = 'game-over';            
+            this.stage = '';
+            setTimeout(() => {
+                this.stage = 'game-over';
+            },600);
         },
         viewHighScores: function() {
             this.viewScores = true;
         },
-        getScores: function(limit = 10, order = 'score') {
-            // get the top 10 ordered by score
+        getScores: function(order = 'score') {
+            // get the scores ordered by score
             return firebase.database()
             .ref('scores/')
             .orderByChild(order)
-            .limitToFirst(limit)
             .once('value', function(snap) {
                 return snap;
             }, function(err) {
                 return err;
             });
         },
+        handleFirstTab: function(e) {
+            if (e.keyCode === 9) { // the "I am a keyboard user" key
+                document.body.classList.add('user-is-tabbing');
+                window.removeEventListener('keydown', this.handleFirstTab);
+            }
+        }
     },
     mounted: function() {
         this.readNames('./../static/txt/classes.txt');
@@ -267,6 +309,8 @@ export default {
                 }
             }
         });
+
+        window.addEventListener('keydown', app.handleFirstTab);
     }
 }
 </script>
@@ -278,6 +322,8 @@ export default {
 /* Variables */
 $black: #333;
 $blue: #7F7FB2;
+$green: #597F4E;
+$green--light: #BDFEA9;
 
 /* Mixins */
 @mixin list-plain {
@@ -300,18 +346,32 @@ body {
     color: $black;
 }
 
+body:not(.user-is-tabbing) button:focus,
+body:not(.user-is-tabbing) input:focus,
+body:not(.user-is-tabbing) select:focus,
+body:not(.user-is-tabbing) textarea:focus {
+    outline: none;
+}
+
 a {
     color: $blue;
+    transition: .3s;
+    &:hover {
+        color: lighten($blue, 10%);
+    }
 }
 
 .btn {
-    background: none;
+    background: $green;
     padding: 5px;
     border: 1px solid $black;
     font-size: 14px;
     &.btn--answer {
         width: 100%;
         height: 55px;
+        &:hover {
+            border-color: $green;
+        }
     }
 }
 
@@ -384,22 +444,30 @@ input[type="text"] {
 .btn {
     height: 42px;
     padding: 10px 20px;
-    background: $blue;
-    border: 1px solid $blue;
+    background: $green;
+    border: 0;
     color: #fff;
     cursor: pointer;
     transition: .3s;
     &:hover {
-        background: #fff;
-        color: $blue;
+        background: lighten($green, 10%);
+        
     }
 }
 
 // ANIMATIOn
 .fade-enter-active, .fade-leave-active {
-    transition: opacity .8s
+    transition: opacity .5s
 }
 .fade-enter, .fade-leave-to {
+    opacity: 0;
+}
+
+.fade-out-leave-active {
+    transition: opacity .5s;
+}
+
+.fade-out-leave-to {
     opacity: 0;
 }
 
