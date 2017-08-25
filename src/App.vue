@@ -118,7 +118,7 @@ export default {
         }
     },
     methods: {
-        // TODO: answers aren't changin on replays
+        // TODO: Tidy up mobile UX, add analytics
         debounce: function(func, wait, immediate) {
             var timeout;
             return function() {
@@ -219,10 +219,8 @@ export default {
                 var containerWidth = document.querySelector('.question').offsetWidth;
                 canvas.width = containerWidth;
                 canvas.height = containerWidth;
-                console.log(canvasImg);
                 var canvasImg = new Image();
-                canvasImg.src = './../static/img/birds/' + this.next.image;
-                console.log(canvasImg.src);
+                canvasImg.src = 'static/img/birds/' + this.next.image;
                 canvasImg.onload = function() {
                     ctx.drawImage(canvasImg, 0, 0, canvasImg.width, canvasImg.height, 0, 0, canvas.width, canvas.height);
                 }
@@ -289,8 +287,8 @@ export default {
         }
     },
     mounted: function() {
-        this.readNames('./../static/txt/classes.txt');
-        this.readImages('./../static/txt/files.txt');
+        this.readNames('static/txt/classes.txt');
+        this.readImages('static/txt/files.txt');
         var app = this;
 
         window.addEventListener('keyup', function(e) {
