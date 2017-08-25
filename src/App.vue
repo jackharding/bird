@@ -118,7 +118,7 @@ export default {
         }
     },
     methods: {
-        // TODO: Tidy up mobile UX, add analytics
+        // TODO: Tidy up mobile UX. Bird animation stopping on re-showing of home screen
         debounce: function(func, wait, immediate) {
             var timeout;
             return function() {
