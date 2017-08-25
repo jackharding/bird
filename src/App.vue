@@ -106,7 +106,7 @@ export default {
             score: 0,
             count: 1,
             username: '',
-            limit: 10,
+            limit: null,
             about: false,
             viewScores: false,
             totalQuestions: 0
@@ -257,7 +257,11 @@ export default {
 
         },
         endQuiz: function() {
-            this.next = {};
+            this.next = {
+                question: '',
+                image: '',
+                answers: []
+            };
             this.stage = '';
             setTimeout(() => {
                 this.stage = 'game-over';
