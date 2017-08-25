@@ -36,6 +36,7 @@
 	.about__text {
 		padding-top: 25px;
 		font-size: 22px;
+		line-height: 24px;
 	}
 
 	.about__close {
