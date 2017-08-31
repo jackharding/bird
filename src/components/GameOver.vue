@@ -54,7 +54,7 @@
 			this.checkScore();
 		},
 		methods: {
-			// Database
+			// Databases
 	        checkScore: function() {
 	            // check if the user's score is higher than any of the top 10
 	            this.getScores()
@@ -62,7 +62,6 @@
 	                var betterThan;
 	                var currentIndex = 0;
 	                data.forEach(topScore => {
-	                	console.log(topScore.val());
 	                    if(this.score > topScore.val().score) {
 	                        betterThan = topScore.key;
 	                    }
@@ -119,7 +118,17 @@
 
 	.game-over__alert {
 		form {
-			margin-top: 10px;
+			display: flex;
+			max-width: 290px;
+			margin: 10px auto 0;
+		}
+
+		input {
+			width: calc(100% - 84px);
+		}
+
+		button {
+			width: 84px;
 		}
 	}
 
