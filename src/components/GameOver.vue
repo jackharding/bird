@@ -106,7 +106,7 @@
 </script>
 
 <style lang="scss">
-	.menu {
+	.game-over__menu {
 		padding: 0;
 		margin: 0 auto;
 		list-style: none;
