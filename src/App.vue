@@ -11,6 +11,10 @@
             </transition>
 
             <transition name="fade">
+                <button class="home-btn" v-if="stage !== 'home'" @click="stage = 'home'"><img src="static/icons/ms-icon-310x310.png" alt="Bird logo"></button>
+            </transition>
+
+            <transition name="fade">
                 <div class="quiz" v-if="stage == 'playing'">
                     <progress-bar
                         :count="count" 
@@ -363,6 +367,11 @@ a {
     }
 }
 
+a,
+button {
+    -webkit-tap-highlight-color: transparent;
+}
+
 .btn {
     background: $green;
     padding: 5px;
@@ -415,6 +424,21 @@ p {
     }
 }
 
+.home-btn {
+    display: none;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 35px;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    img {
+        width: 100%;
+    }
+}
+
 .quiz__top {
     font-size: 20px;
     text-align: center;
@@ -454,6 +478,12 @@ input[type="text"] {
     &:hover {
         background: lighten($green, 10%);
         
+    }
+}
+
+@media screen and (min-width: 535px) {
+    .home-btn {
+        display: block;
     }
 }
 
