@@ -4,7 +4,8 @@
 			<div class="game-over__alert" v-if="highScore">
 				New high score! Submit your score.
 				<form action="" v-on:submit.prevent="setHighscore">
-					<input class="game-over__input" type="text" maxlength="20" @keyup="validateInput" v-model="username" />
+					<label for="username" class="sr-only">Enter your name</label>
+					<input class="game-over__input" placeholder="Enter your name" id="username" type="text" maxlength="20" @keyup="validateInput" v-model="username" />
 					<button type="submit" class="btn" :disabled="valid == false">Submit</button>
 				</form>
 			</div>
@@ -106,6 +107,17 @@
 </script>
 
 <style lang="scss">
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0,0,0,0);
+		border: 0;
+	}
+
 	.game-over__menu {
 		padding: 0;
 		margin: 0 auto;
@@ -125,6 +137,7 @@
 
 		input {
 			width: calc(100% - 84px);
+			border: 1px solid #bcbcbc;
 		}
 
 		button {
