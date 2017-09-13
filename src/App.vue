@@ -245,7 +245,7 @@ export default {
             if(choice == this.next.question.replace(/\d./g, '').replace(/_/g, ' ')) {
                 this.score++;
 
-                if(this.used.length == this.limit - 1) {
+                if(this.used.length === this.limit - 1 || this.used.length === this.totalQuestions - 1) {
                     this.endQuiz();
                 } else {
                     setTimeout(() => {
