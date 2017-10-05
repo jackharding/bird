@@ -36,6 +36,7 @@
                     :score="score"
                     @toggleAbout="about = !about"
                     :startGame="startGame"
+                    :chosenAnswers="chosenAnswers"
                     :viewHighScores="viewHighScores"
                     :getScores="getScores">
                 </game-over>
@@ -113,7 +114,10 @@ export default {
             limit: null,
             about: false,
             viewScores: false,
-            totalQuestions: 0
+            totalQuestions: 0,
+            uid: '',
+            sesh: '',
+            chosenAnswers: []
         }
     },
     watch: {
@@ -155,6 +159,16 @@ export default {
             this.count = 1;
             this.used = [];
             this.stage = '';
+
+            // const session = firebase.database().ref('sessions/' + this.uid).push();
+            // session.set({
+            //     name: clean,
+            //     score: this.score
+            // })
+            // .then(() => {
+            //     this.highScore = false;
+            // });
+            this.trackScore();
             setTimeout(() => {
                 this.stage = 'playing';
                 this.getNext();
@@ -242,8 +256,11 @@ export default {
         },
         submitAnswer: function(e) {
             var choice = e.target.innerText;
-            if(choice == this.next.question.replace(/\d./g, '').replace(/_/g, ' ')) {
+            const correctAnswer = this.next.question.replace(/\d./g, '').replace(/_/g, ' ');
+            if(choice == correctAnswer) {
                 this.score++;
+
+                this.chosenAnswers.push({choice, correctAnswer});
 
                 if(this.used.length === this.limit - 1 || this.used.length === this.totalQuestions - 1) {
                     this.endQuiz();
@@ -283,6 +300,23 @@ export default {
                 return err;
             });
         },
+        trackScore: function() {
+            const sesh = firebase.database().ref('sessions/').push();
+            this.sesh = sesh.key;
+            
+            sesh.set({
+                score: 0
+            });
+
+            // console.log(sesh.key());
+            // session.set({
+            //     name: clean,
+            //     score: this.score
+            // })
+            // .then(() => {
+                
+            // });
+        },
         handleFirstTab: function(e) {
             if (e.keyCode === 9) { // the "I am a keyboard user" key
                 document.body.classList.add('user-is-tabbing');
@@ -317,6 +351,16 @@ export default {
         });
 
         window.addEventListener('keydown', app.handleFirstTab);
+
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
+                app.uid = user.uid;
+            }
+        });
+
+        firebase.auth().signInAnonymously().catch(function(e) {
+            console.log(e);
+        });
     }
 }
 </script>

@@ -42,7 +42,8 @@
 			'score',
 			'startGame',
 			'viewHighScores',
-			'getScores'
+			'getScores',
+			'chosenAnswers'
 		],
 		data() {
 			return {
@@ -82,7 +83,9 @@
 	        	const newScore = firebase.database().ref('scores/').push();
                 newScore.set({
                     name: clean,
-                    score: this.score
+					score: this.score,
+					chosenAnswers: this.chosenAnswers,
+					baps: 'salty'
                 })
                 .then(() => {
                 	this.highScore = false;
