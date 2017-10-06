@@ -84,8 +84,7 @@
                 newScore.set({
                     name: clean,
 					score: this.score,
-					chosenAnswers: this.chosenAnswers,
-					baps: 'salty'
+					chosenAnswers: this.chosenAnswers
                 })
                 .then(() => {
                 	this.highScore = false;

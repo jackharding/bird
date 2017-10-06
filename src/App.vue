@@ -159,15 +159,7 @@ export default {
             this.count = 1;
             this.used = [];
             this.stage = '';
-
-            // const session = firebase.database().ref('sessions/' + this.uid).push();
-            // session.set({
-            //     name: clean,
-            //     score: this.score
-            // })
-            // .then(() => {
-            //     this.highScore = false;
-            // });
+            
             this.trackScore();
             setTimeout(() => {
                 this.stage = 'playing';
@@ -299,23 +291,6 @@ export default {
             }, function(err) {
                 return err;
             });
-        },
-        trackScore: function() {
-            const sesh = firebase.database().ref('sessions/').push();
-            this.sesh = sesh.key;
-            
-            sesh.set({
-                score: 0
-            });
-
-            // console.log(sesh.key());
-            // session.set({
-            //     name: clean,
-            //     score: this.score
-            // })
-            // .then(() => {
-                
-            // });
         },
         handleFirstTab: function(e) {
             if (e.keyCode === 9) { // the "I am a keyboard user" key
