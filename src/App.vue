@@ -160,7 +160,6 @@ export default {
             this.used = [];
             this.stage = '';
             
-            this.trackScore();
             setTimeout(() => {
                 this.stage = 'playing';
                 this.getNext();
